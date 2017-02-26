@@ -2,7 +2,7 @@
 import Palette from './palette';
 import * as graphics from './graphics';
 
-document.addEventListener('DOMContentLoaded', () => {
+(() => {
   var canvas = document.getElementById('canvas');
   var ctx = canvas.getContext('2d');
   var width = screen.width;
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   var blockSize = 12;
 
   canvas.width = width;
-  canvas.height = height - 40;
+  canvas.height = height - 50;
 
   const palette = new Palette();
 
@@ -23,20 +23,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let clicking = false;
 
-  canvas.addEventListener('mousedown', e => { draw(e); clicking = true; });
+  let drawSize = 1;
+
+  document.addEventListener('keyup', e => drawSize = parseInt(e.key) || drawSize);
+
+  canvas.addEventListener('mousedown', e => { drawAtEvent(e, drawSize); clicking = true; });
   canvas.addEventListener('mouseup', () => clicking = false);
 
   canvas.addEventListener('mousemove', function(e) {
-    if (clicking) draw(e);
+    if (clicking) drawAtEvent(e, drawSize);
   });
 
-  const draw = (e) => {
-    var x = e.offsetX - (e.offsetX % blockSize);
-    var y = e.offsetY - (e.offsetY % blockSize);
+  const drawAtEvent = (e, drawSize = 1) => {
+    const xSide = e.offsetX % blockSize;
+    const ySide = e.offsetY % blockSize;
+    const x = e.offsetX - xSide;
+    const y = e.offsetY - ySide;
+
     ctx.fillStyle = palette.getCurrentColor();
-    ctx.fillRect(x, y, blockSize, blockSize);
+    if (drawSize % 2 === 0) drawBlock(x - (xSide < blockSize / 2 ? blockSize*(drawSize/2) : 0), y - (ySide < blockSize / 2 ? blockSize*(drawSize/2) : 0), drawSize);
+    else if (drawSize % 2 === 1) drawBlock(x - (drawSize-1)*blockSize/2, y - (drawSize-1)*blockSize/2, drawSize);
   };
-});
+
+  const drawBlock = (ix, iy, drawSize = 1) => ctx.fillRect(ix, iy, blockSize*drawSize, blockSize*drawSize);
+})();
 
 // setInterval(() => {
 //   for (let x = 0; x < width; x+=blockSize) {
