@@ -24,7 +24,9 @@ import * as graphics from './graphics';
   let clicking = false;
   let erasing = false;
 
-  let drawSize = 1;
+  let drawSize = 3;
+
+  window.setDrawSize = size => drawSize = parseInt(size) || drawSize; // change draw size from console
 
   document.addEventListener('keyup', e => {
     if (parseInt(e.key)) drawSize = parseInt(e.key) || drawSize;
@@ -32,11 +34,25 @@ import * as graphics from './graphics';
     else if (e.key.toLowerCase() === 'd') erasing = false;
   });
 
+  const getTouchOffsets = (e) => {
+    const rect = e.target.getBoundingClientRect();
+    const x = e.targetTouches[0].pageX - rect.left;
+    const y = e.targetTouches[0].pageY - rect.top;
+    return { offsetX: x, offsetY: y};
+  };
+
   canvas.addEventListener('mousedown', e => { drawAtEvent(e, drawSize); clicking = true; });
+  canvas.addEventListener('touchstart', e => { drawAtEvent(getTouchOffsets(e), drawSize); clicking = true; });
   canvas.addEventListener('mouseup', () => clicking = false);
+  canvas.addEventListener('touchend', () => clicking = false);
 
   canvas.addEventListener('mousemove', function(e) {
     if (clicking) drawAtEvent(e, drawSize);
+  });
+
+  canvas.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+    if (clicking) drawAtEvent(getTouchOffsets(e), drawSize);
   });
 
   const drawAtEvent = (e, drawSize = 1) => {
@@ -48,6 +64,8 @@ import * as graphics from './graphics';
     ctx.fillStyle = erasing ? '#000' : palette.getCurrentColor();
     if (drawSize % 2 === 0) drawBlock(x - (xSide < blockSize / 2 ? blockSize*(drawSize/2) : 0), y - (ySide < blockSize / 2 ? blockSize*(drawSize/2) : 0), drawSize);
     else if (drawSize % 2 === 1) drawBlock(x - (drawSize-1)*blockSize/2, y - (drawSize-1)*blockSize/2, drawSize);
+
+    // graphics.drawGrid(canvas, blockSize);
   };
 
   const drawBlock = (ix, iy, drawSize = 1) => ctx.fillRect(ix, iy, blockSize*drawSize, blockSize*drawSize);

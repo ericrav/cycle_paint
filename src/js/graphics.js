@@ -15,6 +15,28 @@ export const drawPalette = (canvas, palette) => {
   drawRoundedRect(ctx, 0, 0, canvas.width, canvas.height);
 };
 
+export const drawGrid = (canvas, blockSize) => {
+  const ctx = canvas.getContext('2d');
+  const strokeStyle = ctx.strokeStyle;
+  const width = canvas.width;
+  const height = canvas.height;
+  ctx.strokeStyle = '#777';
+  for (let x = blockSize; x < width; x+= blockSize) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, height);
+    ctx.stroke();
+  }
+  for (let y = blockSize; y < height; y+= blockSize) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(width, y);
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = strokeStyle;
+};
+
 const drawTriangle = (ctx, x, y, size) => {
   const corner = 4;
   for (let i = 0; i < size / 2; i += corner) {
