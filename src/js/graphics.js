@@ -1,18 +1,20 @@
-export const drawPalette = (canvas, palette) => {
+export const drawPalette = (canvas, x, y, width, height, palette) => {
   const ctx = canvas.getContext('2d');
   const size = palette.getSize();
-  const width = canvas.width / size;
+  const depth = width / size;
   // draw spectrum
   for (let i = 0; i < size; i++) {
     ctx.fillStyle = palette.getColor(i);
-    ctx.fillRect(i * width, 0, width + 1, canvas.height);
+    ctx.fillRect(i * depth + x, y, Math.ceil(depth), height);
   }
 
   // draw border
   ctx.fillStyle = '#fff';
-  drawTriangle(ctx, palette.getColorIndex() * width, 0, 30);
+  drawTriangle(ctx, palette.getColorIndex() * depth + x, y, 30);
   ctx.fillStyle = '#ddd';
-  drawRoundedRect(ctx, 0, 0, canvas.width, canvas.height);
+  drawRoundedRect(ctx, x, y, width, height);
+  ctx.clearRect(x + width, y, 16, height);
+  ctx.clearRect(x - 16, y, 16, height);
 };
 
 export const drawGrid = (canvas, blockSize) => {

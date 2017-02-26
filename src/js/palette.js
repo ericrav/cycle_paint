@@ -35,6 +35,4 @@ export default class Palette {
   getColor(i) {
     return this.colors[i % this.getSize()].rgb().string();
   }
-
-
 }
