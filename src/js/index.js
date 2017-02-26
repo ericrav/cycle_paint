@@ -22,10 +22,15 @@ import * as graphics from './graphics';
   drawPalette();
 
   let clicking = false;
+  let erasing = false;
 
   let drawSize = 1;
 
-  document.addEventListener('keyup', e => drawSize = parseInt(e.key) || drawSize);
+  document.addEventListener('keyup', e => {
+    if (parseInt(e.key)) drawSize = parseInt(e.key) || drawSize;
+    else if (e.key.toLowerCase() === 'e') erasing = true;
+    else if (e.key.toLowerCase() === 'd') erasing = false;
+  });
 
   canvas.addEventListener('mousedown', e => { drawAtEvent(e, drawSize); clicking = true; });
   canvas.addEventListener('mouseup', () => clicking = false);
@@ -40,7 +45,7 @@ import * as graphics from './graphics';
     const x = e.offsetX - xSide;
     const y = e.offsetY - ySide;
 
-    ctx.fillStyle = palette.getCurrentColor();
+    ctx.fillStyle = erasing ? '#000' : palette.getCurrentColor();
     if (drawSize % 2 === 0) drawBlock(x - (xSide < blockSize / 2 ? blockSize*(drawSize/2) : 0), y - (ySide < blockSize / 2 ? blockSize*(drawSize/2) : 0), drawSize);
     else if (drawSize % 2 === 1) drawBlock(x - (drawSize-1)*blockSize/2, y - (drawSize-1)*blockSize/2, drawSize);
   };
