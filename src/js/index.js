@@ -1,38 +1,53 @@
-import Color from 'color';
+// import Color from 'color';
+import Palette from './palette';
+import * as graphics from './graphics';
 
-var canvas = document.getElementById('canvas');
-var ctx = canvas.getContext('2d');
-var width = screen.width;
-var height = screen.height;
-var blockSize = 16;
-const hues = 360;
+document.addEventListener('DOMContentLoaded', () => {
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
+  var width = screen.width;
+  var height = screen.height;
+  var blockSize = 12;
 
-canvas.width = width;
-canvas.height = height;
+  canvas.width = width;
+  canvas.height = height - 40;
 
-let currentColor = Color('#FF0000');
+  const palette = new Palette();
 
-setInterval(() => {
-  currentColor = currentColor.hue(currentColor.hue() + hues/256);
-}, 20);
+  const drawPalette = () => {
+    graphics.drawPalette(document.getElementById('palette'), palette);
+    requestAnimationFrame(drawPalette);
+  };
 
-canvas.addEventListener('mousemove', function(e) {
-  var x = e.x - (e.x % blockSize);
-  var y = e.y - (e.y % blockSize);
-  ctx.fillStyle = currentColor.string();
-  ctx.fillRect(x, y, blockSize, blockSize);
+  drawPalette();
+
+  let clicking = false;
+
+  canvas.addEventListener('mousedown', e => { draw(e); clicking = true; });
+  canvas.addEventListener('mouseup', () => clicking = false);
+
+  canvas.addEventListener('mousemove', function(e) {
+    if (clicking) draw(e);
+  });
+
+  const draw = (e) => {
+    var x = e.offsetX - (e.offsetX % blockSize);
+    var y = e.offsetY - (e.offsetY % blockSize);
+    ctx.fillStyle = palette.getCurrentColor();
+    ctx.fillRect(x, y, blockSize, blockSize);
+  };
 });
 
-setInterval(() => {
-  for (let x = 0; x < width; x+=blockSize) {
-    for (let y = 0; y < height; y+=blockSize) {
-      const imgData = ctx.getImageData(x, y, 1, 1).data;
-      if (imgData[0] + imgData[1] + imgData[2] !== 0) {
-        const thisColor = Color.rgb(imgData[0], imgData[1], imgData[2]).hsl();
-        const newColor = thisColor.hue(thisColor.hue() + hues/256);
-        ctx.fillStyle = newColor.string();
-        ctx.fillRect(x, y, blockSize, blockSize);
-      }
-    }
-  }
-}, 20);
+// setInterval(() => {
+//   for (let x = 0; x < width; x+=blockSize) {
+//     for (let y = 0; y < height; y+=blockSize) {
+//       const imgData = ctx.getImageData(x, y, 1, 1).data;
+//       if (imgData[0] + imgData[1] + imgData[2] !== 0) {
+//         const thisColor = Color.rgb(imgData[0], imgData[1], imgData[2]).hsl();
+//         const newColor = thisColor.hue(thisColor.hue() + 360/256);
+//         ctx.fillStyle = newColor.string();
+//         ctx.fillRect(x, y, blockSize, blockSize);
+//       }
+//     }
+//   }
+// }, 20);
