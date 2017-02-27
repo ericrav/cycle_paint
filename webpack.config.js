@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
+  devtool: '#inline-source-map',
   entry: './src/js/index.js',
   output: {
     filename: 'bundle.js',
@@ -16,12 +17,12 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: 'babel-loader?presets[]=es2015',
+        use: 'babel-loader?presets[]=es2015&retainLines=true'
       }
     ]
   },
   plugins: [
-    new webpack.optimize.UglifyJsPlugin(),
+    // new webpack.optimize.UglifyJsPlugin(),
     new HtmlWebpackPlugin({ template: './src/index.html' })
   ],
   devServer: {

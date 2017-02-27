@@ -17,11 +17,16 @@ import * as graphics from './graphics';
 
   const blockIndex = {};
   window.blockIndex = blockIndex;
-  const drawScreen = () => {
 
-    ctx.clearRect(0, 0, width, height);
-
+  const drawPalette = () => {
     graphics.drawPalette(canvas, 10, 10, 256, 30, palette);
+    requestAnimationFrame(drawPalette);
+  };
+  drawPalette();
+
+  const redrawBlocks = () => {
+
+    ctx.clearRect(0, controlsHeight, width, height - controlsHeight);
 
     // draw all blocks
     for (let key of Object.keys(blockIndex)) {
@@ -29,12 +34,7 @@ import * as graphics from './graphics';
       ctx.fillStyle = palette.getColor(blockIndex[key]);
       ctx.fillRect(coord[0] * blockSize, coord[1] * blockSize + controlsHeight, blockSize, blockSize);
     }
-
-    requestAnimationFrame(drawScreen);
   };
-
-  drawScreen();
-
 
   let clicking = false;
   let erasing = false;
@@ -85,26 +85,17 @@ import * as graphics from './graphics';
 
   // const drawBlock = (ix, iy, drawSize = 1) => ctx.fillRect(ix, iy, blockSize*drawSize, blockSize*drawSize);
   const drawBlock = (x, y, drawSize = 1) => {
+    const colorIndex = palette.getColorIndex();
+    ctx.fillStyle = palette.getColor(colorIndex);
+    if (erasing) ctx.clearRect(x*blockSize, y*blockSize + controlsHeight, blockSize*drawSize, blockSize*drawSize);
+    else ctx.fillRect(x*blockSize, y*blockSize + controlsHeight, blockSize*drawSize, blockSize*drawSize);
+    // store block info
     for (let ix = x; ix < x + drawSize; ix++) {
       for (let iy = y; iy < y + drawSize; iy++) {
         if (ix < 0 || iy < 0) continue; // don't add block outside bounds
         if (erasing) delete blockIndex[ix + ',' + iy];
-        else blockIndex[ix + ',' + iy] = palette.getColorIndex();
+        else blockIndex[ix + ',' + iy] = colorIndex;
       }
     }
   };
 })();
-
-// setInterval(() => {
-//   for (let x = 0; x < width; x+=blockSize) {
-//     for (let y = 0; y < height; y+=blockSize) {
-//       const imgData = ctx.getImageData(x, y, 1, 1).data;
-//       if (imgData[0] + imgData[1] + imgData[2] !== 0) {
-//         const thisColor = Color.rgb(imgData[0], imgData[1], imgData[2]).hsl();
-//         const newColor = thisColor.hue(thisColor.hue() + 360/256);
-//         ctx.fillStyle = newColor.string();
-//         ctx.fillRect(x, y, blockSize, blockSize);
-//       }
-//     }
-//   }
-// }, 20);
