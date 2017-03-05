@@ -15,7 +15,7 @@ import * as graphics from './graphics';
 
   const palette = new Palette();
 
-  const blockIndex = {};
+  let blockIndex = {};
   window.blockIndex = blockIndex;
 
   const drawPalette = () => {
@@ -23,6 +23,11 @@ import * as graphics from './graphics';
     requestAnimationFrame(drawPalette);
   };
   drawPalette();
+
+  const clearCanvas = () => {
+    ctx.clearRect(0, controlsHeight, width, height - controlsHeight);
+    blockIndex = {};
+  };
 
   const redrawBlocks = () => {
 
@@ -47,6 +52,7 @@ import * as graphics from './graphics';
     if (parseInt(e.key)) drawSize = parseInt(e.key) || drawSize;
     else if (e.key.toLowerCase() === 'e') erasing = true;
     else if (e.key.toLowerCase() === 'd') erasing = false;
+    else if (e.key.toLowerCase() === 'c') clearCanvas();
   });
 
   const getTouchOffsets = (e) => {
@@ -87,8 +93,9 @@ import * as graphics from './graphics';
   const drawBlock = (x, y, drawSize = 1) => {
     const colorIndex = palette.getColorIndex();
     ctx.fillStyle = palette.getColor(colorIndex);
-    if (erasing) ctx.clearRect(x*blockSize, y*blockSize + controlsHeight, blockSize*drawSize, blockSize*drawSize);
-    else ctx.fillRect(x*blockSize, y*blockSize + controlsHeight, blockSize*drawSize, blockSize*drawSize);
+    const yBounds = y < 0 ? 0 - y : 0;
+    if (erasing) ctx.clearRect(x*blockSize, (y + yBounds)*blockSize + controlsHeight, blockSize*drawSize, blockSize*(drawSize - yBounds));
+    else ctx.fillRect(x*blockSize, (y + yBounds)*blockSize + controlsHeight, blockSize*drawSize, blockSize*(drawSize - yBounds));
     // store block info
     for (let ix = x; ix < x + drawSize; ix++) {
       for (let iy = y; iy < y + drawSize; iy++) {

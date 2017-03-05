@@ -5,7 +5,7 @@ const startColor = Color('#FF0000');
 
 export default class Palette {
 
-  constructor() {
+  constructor(colorPoints) {
     const colors = [];
     for (let i = 0; i < 360; i += 360/256) {
       colors.push(startColor.hue(i));
