@@ -2,6 +2,8 @@ import ControlsGraphics from './controls_graphics';
 import markerSrc from '../img/marker.png';
 import eraserSrc from '../img/eraser.png';
 
+const maxDrawSize = 5;
+
 export default class Controls {
   constructor(ctx, palette, drawingGraphics, x, y, width, height) {
     this.ctx = ctx;
@@ -96,7 +98,7 @@ export default class Controls {
     y = y + (this.area.height - boxSize) / 2;
 
     return {
-      draw: (self) => self.graphics.drawBoxIcon(x, y, self.getDrawSize() * 10, boxSize),
+      draw: (self) => self.graphics.drawBoxIcon(x, y, self.getDrawSize() * (30 / maxDrawSize), boxSize),
       redraw: () => true,
       click: (self) => self.toggleDrawSize(),
       minX: x,
@@ -121,8 +123,11 @@ export default class Controls {
     };
   }
 
+  // increment drawsize, restarting at 1 if it goes over max size
   toggleDrawSize() {
-    this.drawSize = ((this.drawSize + 1) % 3) + 1; // values 1 - 3
+    // mod by max draw size, so max size would be 0 which is falsy
+    // if mod value is 0, evaluate to maxDrawSize
+    this.drawSize = ((this.drawSize + 1) % maxDrawSize) || maxDrawSize;
   }
 
   setDrawSize(size) {

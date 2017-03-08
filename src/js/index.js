@@ -52,7 +52,7 @@ import Graphics from './graphics';
 
   let clicking = false;
 
-  window.setDrawSize = controls.setDrawSize; // change draw size from console
+  window.setDrawSize = (amt) => controls.setDrawSize(amt); // change draw size from console
 
   document.addEventListener('keyup', e => {
     if (parseInt(e.key)) controls.setDrawSize(e.key);

@@ -56,6 +56,7 @@ export default class ControlsGraphics {
   }
 
   drawBoxIcon(x, y, innerSize, boxSize) {
+    innerSize = Math.min(innerSize, this.height);
     const padding = (boxSize - innerSize) / 2;
     this.ctx.fillStyle = '#fff';
     this.ctx.fillRect(x + padding, y + padding, innerSize, innerSize);
