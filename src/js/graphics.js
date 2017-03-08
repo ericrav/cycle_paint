@@ -27,6 +27,8 @@ export default class Graphics {
     this.ctx = ctx;
     this.palette = palette;
     this.blockSize = blockSize;
+    this.width = width;
+    this.height = height;
     this.offsetY = offsetY;
     this.blockIndex = {};
   }

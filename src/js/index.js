@@ -45,7 +45,6 @@ import Graphics from './graphics';
   const controls = new Controls(ctx, palette, 0, 0, width, controlsHeight);
 
   const drawControls = () => {
-    // graphics.drawControls(canvas, 300, 10, 80, 40, erasing ? 1 : 0);
     controls.draw();
     requestAnimationFrame(drawControls);
   };
