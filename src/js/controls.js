@@ -29,13 +29,14 @@ export default class Controls {
 
     let paletteWidth = 300;
     const horizontalPadding = 16;
+    const textBoxSize = 30;
+    const boxSize = 40;
     
-    if (this.area.width < 600) paletteWidth = 0.25 * this.area.width;
+    if (this.area.width < 600) paletteWidth = this.area.width - (horizontalPadding * 5.5) - (textBoxSize * 2) - (boxSize * 3);
 
     let x = this.area.x;
     x += horizontalPadding;
 
-    const textBoxSize = 30;
     const paletteCycle = (self, amt) => {
       self.palette.incrementColorOffset(amt);
       self.drawingGraphics.redrawBlocks();
@@ -45,12 +46,12 @@ export default class Controls {
     elements.push(this.getTextIconSetup('+', x, this.area.y, textBoxSize, (self) => paletteCycle(self, 8)));
     x += horizontalPadding + textBoxSize;
 
-    elements.push(this.getPaletteSetup(x, this.area.y, paletteWidth));
-    x += paletteWidth;
-    x += horizontalPadding;
+    if (paletteWidth > 0) {
+      elements.push(this.getPaletteSetup(x, this.area.y, paletteWidth));
+      x += paletteWidth + horizontalPadding;
+    }
 
     // set up tool icons
-    const boxSize = 40;
     elements.push(this.getIconSetup(this.marker, x, this.area.y, boxSize));
     x += boxSize;
     elements.push(this.getIconSetup(this.eraser, x, this.area.y, boxSize));
@@ -58,6 +59,7 @@ export default class Controls {
 
     // draw size toggle
     elements.push(this.getDrawSizeIconSetup(x, this.area.y, boxSize));
+    x += boxSize + horizontalPadding;
 
     this.elements = elements;
   }
