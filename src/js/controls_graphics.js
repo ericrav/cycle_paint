@@ -10,10 +10,6 @@ export default class ControlsGraphics {
     this.height = height;
   }
 
-  draw() {
-    this.ctx.clearRect(this.x, this.y, this.width, this.height);
-  }
-
   // draw bar show palette and current color
   // @param width: width of the bar
   drawPalette(palette, x, y, width) {
@@ -47,5 +43,15 @@ export default class ControlsGraphics {
       drawRoundedRect(this.ctx, x, y, boxSize, boxSize, false);
     }
     
+  }
+
+  drawTextIcon(text, x, y, fontSize, boxSize) {
+    const padding = (boxSize - fontSize) / 2;
+    this.ctx.fillStyle = '#ddd';
+    this.ctx.font = fontSize + 'px monospace';
+    this.ctx.textAlign = 'center';
+    this.ctx.textBaseline = 'hanging';
+    this.ctx.fillText(text, x + boxSize/2, y + padding);
+    drawRoundedRect(this.ctx, x, y, boxSize, boxSize, false);
   }
 }

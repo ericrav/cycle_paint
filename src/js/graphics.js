@@ -50,7 +50,7 @@ export default class Graphics {
   }
 
   getCoordsFromEvent(e, drawSize) {
-    if (e.offsetY <= this.offsetY) return;
+    if (e.offsetY <= this.offsetY) return false; // outside bound of drawing canvas
     const xSide = e.offsetX % this.blockSize;
     const ySide = e.offsetY % this.blockSize;
     const x = Math.floor(e.offsetX / this.blockSize);
@@ -64,6 +64,7 @@ export default class Graphics {
 
   eraseBlock(e, drawSize = 1) {
     const coords = this.getCoordsFromEvent(e, drawSize);
+    if (!coords) return;
     const x = coords[0];
     const y = coords[1];
     const yBounds = y < 0 ? 0 - y : 0;
@@ -81,6 +82,7 @@ export default class Graphics {
 
   drawBlock(e, drawSize = 1) {
     const coords = this.getCoordsFromEvent(e, drawSize);
+    if (!coords) return;
     const x = coords[0];
     const y = coords[1];
     const colorIndex = this.palette.getColorIndex();

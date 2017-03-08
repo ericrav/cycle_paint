@@ -3,8 +3,9 @@ import markerSrc from '../img/marker.png';
 import eraserSrc from '../img/eraser.png';
 
 export default class Controls {
-  constructor(ctx, palette, x, y, width, height) {
+  constructor(ctx, palette, drawingGraphics, x, y, width, height) {
     this.ctx = ctx;
+    this.drawingGraphics = drawingGraphics;
     this.graphics = new ControlsGraphics(ctx, x, y, width, height);
     this.area = { x: x, y: y, width: width, height: height };
     this.palette = palette;
@@ -32,6 +33,16 @@ export default class Controls {
     let x = this.area.x;
     x += horizontalPadding;
 
+    const textBoxSize = 30;
+    const paletteCycle = (self, amt) => {
+      self.palette.incrementColorOffset(amt);
+      self.drawingGraphics.redrawBlocks();
+    };
+    elements.push(this.getTextIconSetup('-', x, this.area.y, textBoxSize, (self) => paletteCycle(self, -8)));
+    x += horizontalPadding / 2 + textBoxSize;
+    elements.push(this.getTextIconSetup('+', x, this.area.y, textBoxSize, (self) => paletteCycle(self, 8)));
+    x += horizontalPadding + textBoxSize;
+
     elements.push(this.getPaletteSetup(x, this.area.y, paletteWidth));
     x += paletteWidth;
     x += horizontalPadding;
@@ -50,10 +61,26 @@ export default class Controls {
 
     return {
       draw: (self) => self.graphics.drawPalette(self.palette, x, y, width),
+      redraw: () => true,
       minX: x,
       maxX: x + width,
       minY: y,
       maxY: y + 30
+    };
+  }
+
+  getTextIconSetup(text, x, y, boxSize, click) {
+    const iconSize = 0.65 * boxSize;
+    y = y + (this.area.height - boxSize) / 2;
+
+    return {
+      draw: (self) => self.graphics.drawTextIcon(text, x, y, iconSize, boxSize),
+      redraw: () => false,
+      click: click,
+      minX: x,
+      maxX: x + boxSize,
+      minY: y,
+      maxY: y + boxSize
     };
   }
 
@@ -63,6 +90,7 @@ export default class Controls {
 
     return {
       draw: (self) => self.graphics.drawIcon(icon, x, y, iconSize, boxSize, self.activeTool === icon),
+      redraw: () => true,
       click: (self) => self.selectTool(icon),
       minX: x,
       maxX: x + boxSize,

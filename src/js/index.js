@@ -42,7 +42,7 @@ import Graphics from './graphics';
 
   const palette = new Palette();
   const graphics = new Graphics(ctx, palette, width, height, blockSize, controlsHeight);
-  const controls = new Controls(ctx, palette, 0, 0, width, controlsHeight);
+  const controls = new Controls(ctx, palette, graphics, 0, 0, width, controlsHeight);
 
   const drawControls = () => {
     controls.draw();
