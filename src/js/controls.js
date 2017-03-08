@@ -28,7 +28,7 @@ export default class Controls {
     let paletteWidth = 300;
     const horizontalPadding = 16;
     
-    if (this.area.width < 600) paletteWidth = 0.5 * this.area.width;
+    if (this.area.width < 600) paletteWidth = 0.25 * this.area.width;
 
     let x = this.area.x;
     x += horizontalPadding;

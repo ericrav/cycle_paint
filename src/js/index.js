@@ -8,8 +8,8 @@ import Graphics from './graphics';
   const ctx = canvas.getContext('2d');
 
 
-  const width = screen.width;
-  const height = screen.height;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
   const blockSize = 12;
   const controlsHeight = 60;
 
