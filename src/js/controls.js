@@ -3,7 +3,7 @@ import markerSrc from '../img/marker.png';
 import eraserSrc from '../img/eraser.png';
 
 export default class Controls {
-  constructor(ctx, x, y, width, height, palette) {
+  constructor(ctx, palette, x, y, width, height) {
     this.ctx = ctx;
     this.graphics = new ControlsGraphics(ctx, x, y, width, height);
     this.area = { x: x, y: y, width: width, height: height };
