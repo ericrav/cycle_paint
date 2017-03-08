@@ -1,18 +1,40 @@
-export const drawPalette = (canvas, palette) => {
+import { drawTriangle, drawRoundedRect } from './graphics_helpers';
+import markerSrc from '../img/marker.png';
+import eraserSrc from '../img/eraser.png';
+const marker = new Image();
+marker.src = markerSrc;
+const eraser = new Image();
+eraser.src = eraserSrc;
+
+export const drawControls = (canvas, x, y, width, height, selectedIconIndex) => {
+  const ctx = canvas.getContext('2d');
+  const iconSize = 26;
+  const boxSize = height;
+  const padding = (boxSize - iconSize) / 2;
+  // ctx.clearRect(x, y, 2 * boxSize, height);
+  ctx.drawImage(marker, x + padding, y + padding, iconSize, iconSize);
+  ctx.drawImage(eraser, x + boxSize + padding*2, y + padding, iconSize, iconSize);
+  ctx.fillStyle = '#ddd';
+  drawRoundedRect(ctx, x + selectedIconIndex * (boxSize + padding), y, boxSize, boxSize, false);
+};
+
+export const drawPalette = (canvas, x, y, width, height, palette) => {
   const ctx = canvas.getContext('2d');
   const size = palette.getSize();
-  const width = canvas.width / size;
+  const depth = width / size;
   // draw spectrum
   for (let i = 0; i < size; i++) {
     ctx.fillStyle = palette.getColor(i);
-    ctx.fillRect(i * width, 0, width + 1, canvas.height);
+    ctx.fillRect(i * depth + x, y, Math.ceil(depth), height);
   }
 
   // draw border
   ctx.fillStyle = '#fff';
-  drawTriangle(ctx, palette.getColorIndex() * width, 0, 30);
+  drawTriangle(ctx, palette.getColorIndex() * depth + x, y, 30);
   ctx.fillStyle = '#ddd';
-  drawRoundedRect(ctx, 0, 0, canvas.width, canvas.height);
+  drawRoundedRect(ctx, x, y, width, height);
+  ctx.clearRect(x + width, y, 16, height);
+  ctx.clearRect(x - 16, y, 16, height);
 };
 
 export const drawGrid = (canvas, blockSize) => {
@@ -35,42 +57,4 @@ export const drawGrid = (canvas, blockSize) => {
   }
 
   ctx.strokeStyle = strokeStyle;
-};
-
-const drawTriangle = (ctx, x, y, size) => {
-  const corner = 4;
-  for (let i = 0; i < size / 2; i += corner) {
-    ctx.fillRect(x - (size / 2) + i, y + i, size - i*2, corner);
-  }
-};
-
-const drawRoundedRect = (ctx, x, y, width, height) => {
-  const radius = 8;
-  const borderWidth = 4;
-  const fill = ctx.fillStyle; // preserve fill style
-
-  // erase corners with black
-  ctx.fillStyle = '#000';
-  ctx.fillRect(x, y, radius, radius);
-  ctx.fillRect(x + width - radius, y, radius, radius);
-  ctx.fillRect(x + width - radius, y + height - radius, radius, radius);
-  ctx.fillRect(x, y + height - radius, radius, radius);
-
-  ctx.fillStyle = fill;
-  // top
-  ctx.fillRect(x + radius, y, width - radius*2, borderWidth);
-  // TR corner
-  ctx.fillRect(x + width - radius, y + borderWidth, borderWidth, borderWidth);
-  // right
-  ctx.fillRect(x + width - borderWidth, y + radius, borderWidth, height - radius*2);
-  // BR corner
-  ctx.fillRect(x + width - radius, y + height - radius, borderWidth, borderWidth);
-  // bottom
-  ctx.fillRect(x + radius, y + height - borderWidth, width - radius*2, borderWidth);
-  // BL corner
-  ctx.fillRect(x + borderWidth, y + height - radius, borderWidth, borderWidth);
-  // left
-  ctx.fillRect(x, y + radius, borderWidth, height - radius*2);
-  // TL corner
-  ctx.fillRect(x + borderWidth, y + borderWidth, borderWidth, borderWidth);
 };
