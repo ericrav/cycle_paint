@@ -54,4 +54,12 @@ export default class ControlsGraphics {
     this.ctx.fillText(text, x + boxSize/2, y + padding);
     drawRoundedRect(this.ctx, x, y, boxSize, boxSize, false);
   }
+
+  drawBoxIcon(x, y, innerSize, boxSize) {
+    const padding = (boxSize - innerSize) / 2;
+    this.ctx.fillStyle = '#fff';
+    this.ctx.fillRect(x + padding, y + padding, innerSize, innerSize);
+    this.ctx.fillStyle = '#ddd';
+    drawRoundedRect(this.ctx, x, y, boxSize, boxSize, false);
+  }
 }

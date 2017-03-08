@@ -52,12 +52,10 @@ import Graphics from './graphics';
 
   let clicking = false;
 
-  let drawSize = 1;
-
-  window.setDrawSize = size => drawSize = parseInt(size) || drawSize; // change draw size from console
+  window.setDrawSize = controls.setDrawSize; // change draw size from console
 
   document.addEventListener('keyup', e => {
-    if (parseInt(e.key)) drawSize = parseInt(e.key) || drawSize;
+    if (parseInt(e.key)) controls.setDrawSize(e.key);
     else if (e.key.toLowerCase() === 'e') controls.selectEraser();
     else if (e.key.toLowerCase() === 'd') controls.selectMarker();
     else if (e.key.toLowerCase() === 'c') graphics.clearCanvas();
@@ -78,8 +76,8 @@ import Graphics from './graphics';
   canvas.addEventListener('touchend', () => clicking = false);
 
   const handleTool = (e) => {
-    if (controls.isEraserSelected()) graphics.eraseBlock(e, drawSize);
-    else graphics.drawBlock(e, drawSize);
+    if (controls.isEraserSelected()) graphics.eraseBlock(e, controls.getDrawSize());
+    else graphics.drawBlock(e, controls.getDrawSize());
   };
 
   canvas.addEventListener('mousemove', function(e) {

@@ -39,8 +39,6 @@ export default class Graphics {
   }
 
   redrawBlocks() {
-    this.ctx.clearRect(0, this.offsetY, this.width, this.height - this.offsetY);
-
     // draw all blocks
     for (let key of Object.keys(this.blockIndex)) {
       const coord = key.split(',');

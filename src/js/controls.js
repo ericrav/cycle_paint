@@ -10,6 +10,8 @@ export default class Controls {
     this.area = { x: x, y: y, width: width, height: height };
     this.palette = palette;
 
+    this.drawSize = 1;
+
     this.setupGraphics();
 
     this.ctx.canvas.addEventListener('click', (e) => this.handleClick(e.offsetX, e.offsetY));
@@ -52,6 +54,10 @@ export default class Controls {
     elements.push(this.getIconSetup(this.marker, x, this.area.y, boxSize));
     x += boxSize;
     elements.push(this.getIconSetup(this.eraser, x, this.area.y, boxSize));
+    x += boxSize + horizontalPadding;
+
+    // draw size toggle
+    elements.push(this.getDrawSizeIconSetup(x, this.area.y, boxSize));
 
     this.elements = elements;
   }
@@ -84,6 +90,20 @@ export default class Controls {
     };
   }
 
+  getDrawSizeIconSetup(x, y, boxSize) {
+    y = y + (this.area.height - boxSize) / 2;
+
+    return {
+      draw: (self) => self.graphics.drawBoxIcon(x, y, self.getDrawSize() * 10, boxSize),
+      redraw: () => true,
+      click: (self) => self.toggleDrawSize(),
+      minX: x,
+      maxX: x + boxSize,
+      minY: y,
+      maxY: y + boxSize
+    };
+  }
+
   getIconSetup(icon, x, y, boxSize) {
     const iconSize = 0.65 * boxSize;
     y = y + (this.area.height - boxSize) / 2;
@@ -97,6 +117,18 @@ export default class Controls {
       minY: y,
       maxY: y + boxSize
     };
+  }
+
+  toggleDrawSize() {
+    this.drawSize = ((this.drawSize + 1) % 3) + 1; // values 1 - 3
+  }
+
+  setDrawSize(size) {
+    this.drawSize = parseInt(size) || this.drawSize;
+  }
+
+  getDrawSize() {
+    return this.drawSize;
   }
 
   selectTool(icon) {
