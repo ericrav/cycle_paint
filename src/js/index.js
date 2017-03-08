@@ -1,28 +1,59 @@
 // import Color from 'color';
 import Palette from './palette';
+import Controls from './controls';
 import * as graphics from './graphics';
 
 (() => {
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
+
+
   const width = screen.width;
   const height = screen.height;
   const blockSize = 12;
-  const controlsHeight = 50;
+  const controlsHeight = 60;
 
   canvas.width = width;
   canvas.height = height;
+  
+  // adjust canvas resolution
+  // src: http://jsfiddle.net/4xe4d/
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  const backingStoreRatio = ctx.webkitBackingStorePixelRatio ||
+                            ctx.mozBackingStorePixelRatio ||
+                            ctx.msBackingStorePixelRatio ||
+                            ctx.oBackingStorePixelRatio ||
+                            ctx.backingStorePixelRatio || 1;
+  // upscale canvas if the two ratios don't match
+  if (devicePixelRatio !== backingStoreRatio) {
+
+    const ratio = devicePixelRatio / backingStoreRatio;
+    const oldWidth = canvas.width;
+    const oldHeight = canvas.height;
+    canvas.width = Math.round(oldWidth * ratio);
+    canvas.height = Math.round(oldHeight * ratio);
+    canvas.style.width = oldWidth + 'px';
+    canvas.style.height = oldHeight + 'px';
+    // now scale the context to counter
+    // the fact that we've manually scaled
+    // our canvas element
+    ctx.scale(ratio, ratio);
+  }
 
   const palette = new Palette();
 
   let blockIndex = {};
   window.blockIndex = blockIndex;
 
-  const drawPalette = () => {
-    graphics.drawPalette(canvas, 10, 10, 256, 30, palette);
-    requestAnimationFrame(drawPalette);
+
+  const controls = new Controls(ctx, 0, 0, width, controlsHeight, palette);
+
+  const drawControls = () => {
+    // graphics.drawControls(canvas, 300, 10, 80, 40, erasing ? 1 : 0);
+    controls.draw();
+    requestAnimationFrame(drawControls);
   };
-  drawPalette();
+  drawControls();
 
   const clearCanvas = () => {
     ctx.clearRect(0, controlsHeight, width, height - controlsHeight);
@@ -42,7 +73,6 @@ import * as graphics from './graphics';
   };
 
   let clicking = false;
-  let erasing = false;
 
   let drawSize = 1;
 
@@ -50,9 +80,11 @@ import * as graphics from './graphics';
 
   document.addEventListener('keyup', e => {
     if (parseInt(e.key)) drawSize = parseInt(e.key) || drawSize;
-    else if (e.key.toLowerCase() === 'e') erasing = true;
-    else if (e.key.toLowerCase() === 'd') erasing = false;
+    else if (e.key.toLowerCase() === 'e') controls.selectEraser();
+    else if (e.key.toLowerCase() === 'd') controls.selectMarker();
     else if (e.key.toLowerCase() === 'c') clearCanvas();
+    else if (e.key.toLowerCase() === '=') { palette.incrementColorOffset(); redrawBlocks(); }
+    else if (e.key.toLowerCase() === '-') { palette.incrementColorOffset(-1); redrawBlocks(); }
   });
 
   const getTouchOffsets = (e) => {
@@ -94,13 +126,13 @@ import * as graphics from './graphics';
     const colorIndex = palette.getColorIndex();
     ctx.fillStyle = palette.getColor(colorIndex);
     const yBounds = y < 0 ? 0 - y : 0;
-    if (erasing) ctx.clearRect(x*blockSize, (y + yBounds)*blockSize + controlsHeight, blockSize*drawSize, blockSize*(drawSize - yBounds));
+    if (controls.isEraserSelected()) ctx.clearRect(x*blockSize, (y + yBounds)*blockSize + controlsHeight, blockSize*drawSize, blockSize*(drawSize - yBounds));
     else ctx.fillRect(x*blockSize, (y + yBounds)*blockSize + controlsHeight, blockSize*drawSize, blockSize*(drawSize - yBounds));
     // store block info
     for (let ix = x; ix < x + drawSize; ix++) {
       for (let iy = y; iy < y + drawSize; iy++) {
         if (ix < 0 || iy < 0) continue; // don't add block outside bounds
-        if (erasing) delete blockIndex[ix + ',' + iy];
+        if (controls.isEraserSelected()) delete blockIndex[ix + ',' + iy];
         else blockIndex[ix + ',' + iy] = colorIndex;
       }
     }
