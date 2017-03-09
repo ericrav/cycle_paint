@@ -55,12 +55,13 @@ import Graphics from './graphics';
   window.setDrawSize = (amt) => controls.setDrawSize(amt); // change draw size from console
 
   document.addEventListener('keyup', e => {
-    if (parseInt(e.key)) controls.setDrawSize(e.key);
-    else if (e.key.toLowerCase() === 'e') controls.selectEraser();
-    else if (e.key.toLowerCase() === 'd') controls.selectMarker();
-    else if (e.key.toLowerCase() === 'c') graphics.clearCanvas();
-    else if (e.key.toLowerCase() === '=') { palette.incrementColorOffset(); graphics.redrawBlocks(); }
-    else if (e.key.toLowerCase() === '-') { palette.incrementColorOffset(-1); graphics.redrawBlocks(); }
+    console.log(e.keyCode);
+    if (e.keyCode >= 49 && e.keyCode <= 57) controls.setDrawSize(e.keyCode - 48);
+    else if (e.keyCode === 69) controls.selectEraser(); // e
+    else if (e.keyCode === 68) controls.selectMarker(); // d
+    else if (e.keyCode === 67) graphics.clearCanvas(); // c
+    else if (e.keyCode === 187) { palette.incrementColorOffset(); graphics.redrawBlocks(); } // +
+    else if (e.keyCode === 189) { palette.incrementColorOffset(-1); graphics.redrawBlocks(); } // -
   });
 
   const getTouchOffsets = (e) => {
